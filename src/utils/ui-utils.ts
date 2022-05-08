@@ -19,6 +19,8 @@ export const getDirectoryContent = (directoryPath: string) => {
       const isNormalFile = files.filter((value) => !value.startsWith("."));
       detailContent = `![](${fileUrl(assetPath + "/" + previewIcon)})\n
 
+------
+
 **Name**:${parsePath.name}
 
 **Where**: ${parsePath.dir}

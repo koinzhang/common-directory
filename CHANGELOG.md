@@ -1,6 +1,10 @@
 # Common Directory Changelog
 
-## [Added Common Directory] - 2022-04-22
-- Release of Common Directory version 1.0
+## [Added Common Directory] - 2022-04-30
+
+- Fix Rank algorithm bugs
+- Add hazardous operation warning
+
+## [Added Common Directory] - 2022-04-25
+
 - Quick access to frequently used folder directories
-- Quickly Send files to the common directory, open directory or folder chosen manually

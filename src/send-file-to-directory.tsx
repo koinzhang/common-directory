@@ -168,7 +168,7 @@ function SendToDirectoryItem(props: {
             title={primaryAction === ActionType.COPY ? "Copy to Directory" : "Move to Directory"}
             icon={primaryAction === ActionType.COPY ? Icon.Clipboard : Icon.Download}
             onAction={async () => {
-              await actionMoveOrCopy(directory, commonDirectory, index, primaryAction, false);
+              await actionMoveOrCopy(directory, commonDirectory, index, primaryAction, false, setRefresh);
               setUpdateDetail(refreshNumber());
             }}
           />
@@ -177,9 +177,9 @@ function SendToDirectoryItem(props: {
             icon={primaryAction === ActionType.COPY ? Icon.Download : Icon.Clipboard}
             onAction={async () => {
               if (primaryAction === ActionType.COPY) {
-                await actionMoveOrCopy(directory, commonDirectory, index, ActionType.MOVE, false);
+                await actionMoveOrCopy(directory, commonDirectory, index, ActionType.MOVE, false, setRefresh);
               } else {
-                await actionMoveOrCopy(directory, commonDirectory, index, ActionType.COPY, false);
+                await actionMoveOrCopy(directory, commonDirectory, index, ActionType.COPY, false, setRefresh);
               }
               setUpdateDetail(refreshNumber());
             }}
@@ -192,7 +192,7 @@ function SendToDirectoryItem(props: {
               icon={primaryAction === ActionType.COPY ? Icon.Clipboard : Icon.Download}
               shortcut={{ modifiers: ["shift", "cmd"], key: "m" }}
               onAction={async () => {
-                await actionMoveOrCopy(directory, commonDirectory, index, primaryAction, true);
+                await actionMoveOrCopy(directory, commonDirectory, index, primaryAction, true, setRefresh);
                 setUpdateDetail(refreshNumber());
               }}
             />
@@ -204,9 +204,9 @@ function SendToDirectoryItem(props: {
               shortcut={{ modifiers: ["shift", "cmd"], key: "c" }}
               onAction={async () => {
                 if (primaryAction === ActionType.COPY) {
-                  await actionMoveOrCopy(directory, commonDirectory, index, ActionType.MOVE, true);
+                  await actionMoveOrCopy(directory, commonDirectory, index, ActionType.MOVE, true, setRefresh);
                 } else {
-                  await actionMoveOrCopy(directory, commonDirectory, index, ActionType.COPY, true);
+                  await actionMoveOrCopy(directory, commonDirectory, index, ActionType.COPY, true, setRefresh);
                 }
                 setUpdateDetail(refreshNumber());
               }}
@@ -229,23 +229,34 @@ function SendToDirectoryItem(props: {
                   icon={Icon.Trash}
                   shortcut={{ modifiers: ["cmd", "ctrl"], key: "x" }}
                   onAction={async () => {
-                    const _sendCommonDirectory = [...commonDirectory];
-                    _sendCommonDirectory.splice(index, 1);
-                    await LocalStorage.setItem(
-                      LocalDirectoryKey.SEND_COMMON_DIRECTORY,
-                      JSON.stringify(_sendCommonDirectory)
-                    );
-                    setRefresh(refreshNumber());
+                    await alertDialog(
+                      Icon.Trash,
+                      "Remove Directory",
+                      `Are you sure you want to remove ${directory.name}?`,
+                      "Remove",
+                      async () => {
+                        const _sendCommonDirectory = [...commonDirectory];
+                        _sendCommonDirectory.splice(index, 1);
+                        await LocalStorage.setItem(
+                          LocalDirectoryKey.SEND_COMMON_DIRECTORY,
+                          JSON.stringify(_sendCommonDirectory)
+                        );
+                        setRefresh(refreshNumber());
 
-                    const _openCommonDirectory = await getDirectory(LocalDirectoryKey.OPEN_COMMON_DIRECTORY, "Rank");
-                    const __openCommonDirectory = _openCommonDirectory.filter((value) => {
-                      return value.path !== directory.path;
-                    });
-                    await LocalStorage.setItem(
-                      LocalDirectoryKey.OPEN_COMMON_DIRECTORY,
-                      JSON.stringify(__openCommonDirectory)
+                        const _openCommonDirectory = await getDirectory(
+                          LocalDirectoryKey.OPEN_COMMON_DIRECTORY,
+                          "Rank"
+                        );
+                        const __openCommonDirectory = _openCommonDirectory.filter((value) => {
+                          return value.path !== directory.path;
+                        });
+                        await LocalStorage.setItem(
+                          LocalDirectoryKey.OPEN_COMMON_DIRECTORY,
+                          JSON.stringify(__openCommonDirectory)
+                        );
+                        await showToast(Toast.Style.Success, "Removed successfully!");
+                      }
                     );
-                    await showToast(Toast.Style.Success, "Removed successfully!");
                   }}
                 />
                 <Action
@@ -253,26 +264,40 @@ function SendToDirectoryItem(props: {
                   icon={Icon.ExclamationMark}
                   shortcut={{ modifiers: ["ctrl", "shift"], key: "x" }}
                   onAction={async () => {
-                    await alertDialog("⚠️Warning", "Do you want to remove all directories?", "Remove All", async () => {
-                      await LocalStorage.setItem(LocalDirectoryKey.OPEN_COMMON_DIRECTORY, JSON.stringify([]));
-                      await LocalStorage.setItem(LocalDirectoryKey.SEND_COMMON_DIRECTORY, JSON.stringify([]));
-                      setRefresh(refreshNumber());
-                      await showToast(Toast.Style.Success, "Removed All successfully!");
-                    });
+                    await alertDialog(
+                      Icon.ExclamationMark,
+                      "Remove All Directory",
+                      "Are you sure you want to remove all directories?",
+                      "Remove All",
+                      async () => {
+                        await LocalStorage.setItem(LocalDirectoryKey.OPEN_COMMON_DIRECTORY, JSON.stringify([]));
+                        await LocalStorage.setItem(LocalDirectoryKey.SEND_COMMON_DIRECTORY, JSON.stringify([]));
+                        setRefresh(refreshNumber);
+                        await showToast(Toast.Style.Success, "Removed All successfully!");
+                      }
+                    );
+                  }}
+                />
+                <Action
+                  title={"Rest All Rank"}
+                  icon={Icon.ArrowClockwise}
+                  shortcut={{ modifiers: ["ctrl", "shift"], key: "r" }}
+                  onAction={async () => {
+                    await alertDialog(
+                      Icon.ArrowClockwise,
+                      "Rest All Rank",
+                      "Are you sure you want to reset all rank?",
+                      "Reset All Rank",
+                      async () => {
+                        resetRank(commonDirectory, setRefresh).then(async () => {
+                          await showToast(Toast.Style.Success, "Reset successfully!");
+                        });
+                      }
+                    );
                   }}
                 />
               </>
             )}
-            <Action
-              title={"Rest All Rank"}
-              icon={Icon.ArrowClockwise}
-              shortcut={{ modifiers: ["ctrl", "shift"], key: "r" }}
-              onAction={() => {
-                resetRank(commonDirectory, setRefresh).then(async () => {
-                  await showToast(Toast.Style.Success, "Reset successfully!");
-                });
-              }}
-            />
           </ActionPanel.Section>
 
           <ActionPanel.Section title={"Detail Action"}>
@@ -297,7 +322,8 @@ async function actionMoveOrCopy(
   commonDirectory: DirectoryInfo[],
   index: number,
   action: ActionType,
-  manual: boolean
+  manual: boolean,
+  setRefresh: React.Dispatch<React.SetStateAction<number>>
 ) {
   try {
     await showToast(Toast.Style.Animated, `${action == ActionType.COPY ? "Copying" : "Moving"}... Don't quit.`);
@@ -320,6 +346,7 @@ async function actionMoveOrCopy(
     }
     if (directory.isCommon) {
       await LocalStorage.setItem(LocalDirectoryKey.SEND_COMMON_DIRECTORY, JSON.stringify(_commonDirectory));
+      setRefresh(refreshNumber());
     }
   } catch (e) {
     await showToast(Toast.Style.Failure, "Error!", "Path has expired." + String(e));
@@ -335,13 +362,12 @@ async function upRankSendFile(directories: DirectoryInfo[], index: number) {
   const moreHighRank = directories.filter((value) => {
     return value.path !== directories[index].path && value.rankSendFile >= directories[index].rankSendFile;
   });
-  if (moreHighRank.length == 0) {
-    return directories;
+  if (moreHighRank.length !== 0) {
+    let allRank = 0;
+    directories.forEach((value) => [(allRank = allRank + value.rankSendFile)]);
+    directories[index].rankSendFile =
+      Math.floor((directories[index].rankSendFile + 1 - directories[index].rankSendFile / allRank) * 100) / 100;
   }
-  let allRank = 0;
-  directories.forEach((value) => [(allRank = allRank + value.rankSendFile)]);
-  directories[index].rankSendFile =
-    Math.floor((directories[index].rankSendFile + 1 - directories[index].rankSendFile / allRank) * 100) / 100;
   directories.sort(function (a, b) {
     return b.rankSendFile - a.rankSendFile;
   });
