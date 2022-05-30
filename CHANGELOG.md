@@ -1,6 +1,10 @@
 # Common Directory Changelog
 
-## [Update directory preview] - 2022-05-23
+## [Add feature: Enter sub-folder] - 2022-06-5
+
+- Add feature **Enter sub-folder**: Now you can enter and exit folders with _Enter Folder_ and _Enclosing Folder_ actions
+
+## [Update directory preview] - 2022-05-24
 
 - Optimize _Choose File Path_ action
 - Add empty view for commands
