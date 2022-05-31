@@ -1,8 +1,8 @@
 # Common Directory Changelog
 
-## [Add feature: Enter sub-folder] - 2022-06-5
+## [Add feature: Enter sub-folder] - {PR_MERGE_DATE}
 
-- Add feature **Enter sub-folder**: Now you can enter and exit folders with _Enter Folder_ and _Enclosing Folder_ actions
+- Add feature **Enter sub-folder**: Now you can enter and exit folders with _Enter Folder_(⌘+⎇+↓) and _Enclosing Folder_(⌘+⎇+↑) actions
 
 ## [Update directory preview] - 2022-05-24
 
