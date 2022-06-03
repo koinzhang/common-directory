@@ -17,39 +17,7 @@ _When using the Send File to command, please note the following warning tips_
 - ⚠️Do not use shortcut keys to call other commands or extensions when using it to move/copy files, this behavior will lead to quit this extension.
 - ⚠️The operation of moving files with this extension cannot be reversed, so please operate with caution.
 
----
 
-**Commands:**
-
-- **Open Common Directory**: Quick access to frequently used folder directories
-
-  - Open
-  - Show in Finder
-  - Copy File
-  - Copy Name
-  - Copy Path
-  - Add Directory
-  - Remove Directory
-  - Rest All Rank
-  - Toggle Detail
-
-- **Add Common Directory**: Add frequently used folder directories
-
-  - Add Directory
-  - Fetch Directory
-  - Choose Directory
-
-- **Send File to**: Send files to the common directory, open directory or folder chosen manually
-  - Copy to Directory
-  - Move to Directory
-  - Copy to Folder Chosen Manually
-  - Move to Folder Chosen Manually
-  - Copy File
-  - Copy Name
-  - Copy Path
-  - Remove Directory
-  - Rest All Rank
-  - Toggle Detail
 
 **Preferences:**
 
